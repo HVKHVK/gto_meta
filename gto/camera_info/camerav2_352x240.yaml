@@ -1,0 +1,20 @@
+image_width: 352
+image_height: 240
+camera_name: camerav2_352x240
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [1442.077850, 0, 568.188354, 0, 1441.296292, 529.625593, 0, 0, 1]
+distortion_model: plumb_bob
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [-0.516805, 0.681184, -0.000845, 0.009096, 0]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [1326.326050, 0, 570.763671, 0, 0, 1362.760620, 533.958672, 0, 0, 0, 1, 0]
