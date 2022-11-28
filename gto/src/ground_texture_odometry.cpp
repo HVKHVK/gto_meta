@@ -2,7 +2,7 @@
 
 namespace groud_texture_odometry{
 
-  GroundTextureOdometry::GroundTextureOdometry(): private_nh_("~"), rate(10)
+  GroundTextureOdometry::GroundTextureOdometry(): private_nh_("~"), rate(30)
   {
 
     image_subscriber_ = nh_.subscribe("image_raw", 100, &GroundTextureOdometry::imageCallback, this);
