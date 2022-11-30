@@ -3,7 +3,7 @@
   <arg name="usb_port_id"         default=""/>
   <arg name="device_type"         default=""/>
   <arg name="json_file_path"      default=""/>
-  <arg name="camera"              default="camera"/>
+  <arg name="camera"              default="camera_gto"/>
   <arg name="tf_prefix"           default="$(arg camera)"/>
   <arg name="external_manager"    default="false"/>
   <arg name="manager"             default="realsense2_camera_manager"/>
@@ -144,24 +144,11 @@
       <arg name="allow_no_texture_points"  value="$(arg allow_no_texture_points)"/>
       <arg name="ordered_pc"               value="$(arg ordered_pc)"/>
     </include>
-      <remap from="/camera/color/camera_info" to="/gto/camera/color/camera_info"/>
-      <remap from="/camera/color/image_raw" to="/gto/camera/color/image_raw"/>
-      <remap from="/camera/color/image_raw/compressed" to="/gto/camera/color/image_raw/compressed"/>
-      <remap from="/camera/color/image_raw/compressed/parameter_descriptions" to="/gto/camera/color/image_raw/compressed/parameter_descriptions"/>
-      <remap from="/camera/color/image_raw/compressed/parameter_updates" to="/gto/camera/color/image_raw/compressed/parameter_updates"/>
-      <remap from="/camera/color/metadata" to="/gto/camera/color/metadata"/>
-      <remap from="/camera/realsense2_camera_manager/bond" to="/gto/camera/realsense2_camera_manager/bond"/>
-      <remap from="/camera/rgb_camera/auto_exposure_roi/parameter_descriptions" to="/gto/camera/rgb_camera/auto_exposure_roi/parameter_descriptions"/>
-      <remap from="/camera/rgb_camera/auto_exposure_roi/parameter_updates" to="/gto/camera/rgb_camera/auto_exposure_roi/parameter_updates"/>
-      <remap from="/camera/rgb_camera/parameter_descriptions" to="/gto/camera/rgb_camera/parameter_descriptions"/>
-      <remap from="/camera/rgb_camera/parameter_updates" to="/gto/camera/rgb_camera/parameter_updates"/>
-      <remap from="/camera/stereo_module/parameter_descriptions" to="/gto/camera/stereo_module/parameter_descriptions"/>
-      <remap from="/camera/stereo_module/parameter_updates" to="/gto/camera/stereo_module/parameter_updates"/>
   </group>
 
   <node pkg="gto" type="ground_texture_odometry_node" name="ground_texture_odometry" output="screen">
-  <remap from="/image_raw" to="/gto/camera/color/image_raw/compressed"/>
-  <remap from="/camera_info" to="/gto/camera/color/camera_info"/>
+  <remap from="/image_raw" to="/camera_gto/color/image_raw/compressed"/>
+  <remap from="/camera_info" to="/camera_gto/camera/color/camera_info"/>
   </node>
 
 
