@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(gto)
+project(viso)
 add_definitions(-std=c++11)
 set(CMAKE_BUILD_TYPE Debug)
 
@@ -20,7 +20,7 @@ find_package(catkin REQUIRED COMPONENTS ${DEPS})
 find_package(OpenCV REQUIRED )
 
 generate_dynamic_reconfigure_options(
-   cfg/gto.cfg
+   cfg/viso.cfg
 )
 
 add_service_files(
@@ -45,17 +45,17 @@ include_directories(
   ${OpenCV_INCLUDE_DIRS}
 )
 
-add_library(ground_texture_odometry src/ground_texture_odometry.cpp)
-add_dependencies(ground_texture_odometry ${PROJECT_NAME}_gencfg ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(ground_texture_odometry ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_library(visual_odometry src/visual_odometry.cpp)
+add_dependencies(visual_odometry ${PROJECT_NAME}_gencfg ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(visual_odometry ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
-add_executable(ground_texture_odometry_node src/ground_texture_odometry_node.cpp)
-add_dependencies(ground_texture_odometry_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(ground_texture_odometry_node ground_texture_odometry ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_executable(visual_odometry_node src/visual_odometry_node.cpp)
+add_dependencies(visual_odometry_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(visual_odometry_node visual_odometry ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
-set_target_properties(ground_texture_odometry_node PROPERTIES OUTPUT_NAME ground_texture_odometry_node)
+set_target_properties(visual_odometry_node PROPERTIES OUTPUT_NAME visual_odometry_node)
 
-install(TARGETS ground_texture_odometry_node ground_texture_odometry 
+install(TARGETS visual_odometry_node visual_odometry 
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

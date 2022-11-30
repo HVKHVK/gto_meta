@@ -4,7 +4,7 @@ int main(int argc, char **argv){
   ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info);
   ros::init(argc, argv, "ground_texture_odometry_node");
 
-  groud_texture_odometry::GroundTextureOdometry* gto = new groud_texture_odometry::GroundTextureOdometry();
+  ground_texture_odometry::GroundTextureOdometry* gto = new ground_texture_odometry::GroundTextureOdometry();
   gto->main();
   
   delete gto;

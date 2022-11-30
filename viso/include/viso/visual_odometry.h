@@ -1,5 +1,5 @@
-#ifndef GROUND_TEXTURE_ODOMETRY_H_
-#define GROUND_TEXTURE_ODOMETRY_H_
+#ifndef VISUAL_ODOMETRY_H_
+#define VISUAL_ODOMETRY_H_
 
 #include <vector>
 #include <string>
@@ -41,15 +41,15 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <geometry_msgs/TransformStamped.h>
 
-namespace ground_texture_odometry
+namespace visual_odometry
 {
 
-  class GroundTextureOdometry
+  class VisualOdometry
   {
 
     public:
-        GroundTextureOdometry();
-        ~GroundTextureOdometry();
+        VisualOdometry();
+        ~VisualOdometry();
         void main();
 
     private:        
@@ -105,7 +105,7 @@ namespace ground_texture_odometry
         nav_msgs::Odometry msgs;
         double x = 0;
         double y = 0;
-        //double z = 0;
+        double z = 0;
         double roll = 0;
         double pitch = 0;
         double yaw = 0;
@@ -120,4 +120,4 @@ namespace ground_texture_odometry
         double camera_h_mm = 37;
   };
 };
-#endif // GROUND_TEXTURE_ODOMETRY_H_
+#endif // VISUAL_ODOMETRY_H_

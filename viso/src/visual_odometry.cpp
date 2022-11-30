@@ -1,12 +1,12 @@
-#include <gto/ground_texture_odometry.h>
+#include <viso/visual_odometry.h>
 
-namespace ground_texture_odometry{
+namespace visual_odometry{
 
-  GroundTextureOdometry::GroundTextureOdometry(): private_nh_("~"), rate(30)
+  VisualOdometry::VisualOdometry(): private_nh_("~"), rate(30)
   {
 
-    image_subscriber_ = nh_.subscribe("image_raw", 100, &GroundTextureOdometry::imageCallback, this);
-    camera_info_ = nh_.subscribe("camera_info", 10, &GroundTextureOdometry::infoCallback, this);
+    image_subscriber_ = nh_.subscribe("image_raw", 100, &VisualOdometry::imageCallback, this);
+    camera_info_ = nh_.subscribe("camera_info", 10, &VisualOdometry::infoCallback, this);
     output_odom_ = private_nh_.advertise<nav_msgs::Odometry>("odom", 10, true);
 
     keypoint_publisher_ = private_nh_.advertise<sensor_msgs::Image>("I_keypoint_publisher", 10, true);
@@ -18,10 +18,10 @@ namespace ground_texture_odometry{
     matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE_HAMMING);
 
     dsrv_ = new dynamic_reconfigure::Server<gto::gtoConfig>(ros::NodeHandle("~"));
-    dynamic_reconfigure::Server<gto::gtoConfig>::CallbackType cb = boost::bind(&GroundTextureOdometry::paramCallback, this, _1, _2);
+    dynamic_reconfigure::Server<gto::gtoConfig>::CallbackType cb = boost::bind(&VisualOdometry::paramCallback, this, _1, _2);
     dsrv_->setCallback(cb);    
     
-    odom_reset_ = private_nh_.advertiseService("odom_reset", &GroundTextureOdometry::odomResetCallback, this);
+    odom_reset_ = private_nh_.advertiseService("odom_reset", &VisualOdometry::odomResetCallback, this);
     //private_nh_.param("debug", debug_, true);
     image_queue_ = boost::circular_buffer<cv::Mat>(10);
 
@@ -36,21 +36,21 @@ namespace ground_texture_odometry{
     }
     ROS_INFO("Initializing...");
 
-    GroundTextureOdometry::initialFrame();
+    VisualOdometry::initialFrame();
 
     ROS_INFO("Starting...");
   };
 
-  GroundTextureOdometry::~GroundTextureOdometry()
+  VisualOdometry::~VisualOdometry()
   {
   };
 
-  void GroundTextureOdometry::main()
+  void VisualOdometry::main()
   {
     while(ros::ok())
     {
       timer.start();
-      GroundTextureOdometry::process();
+      VisualOdometry::process();
       rate.sleep();      
       timer.stop();
       ROS_INFO("FPS: (%f)", 1.0 / timer.getTimeSec());
@@ -59,7 +59,7 @@ namespace ground_texture_odometry{
     }
   }
   
-  bool GroundTextureOdometry::odomResetCallback(gto::PoseCmd::Request &req , gto::PoseCmd::Response &res)
+  bool VisualOdometry::odomResetCallback(gto::PoseCmd::Request &req , gto::PoseCmd::Response &res)
   {
     std::lock_guard<std::mutex> lock(mutex);
     x = req.pose.position.x;
@@ -67,7 +67,7 @@ namespace ground_texture_odometry{
     return true;
   }
 
-  void GroundTextureOdometry::process()
+  void VisualOdometry::process()
   {
     std::lock_guard<std::mutex> lock(mutex);
 
@@ -88,7 +88,7 @@ namespace ground_texture_odometry{
     {
       cv::Mat keypoint_frame;
       cv::drawKeypoints( secundum_frame, secundum_keypoints, keypoint_frame, cv::Scalar( 0, 255, 0 ));
-      keypoint_publisher_.publish(GroundTextureOdometry::cvToRosImage(keypoint_frame));
+      keypoint_publisher_.publish(VisualOdometry::cvToRosImage(keypoint_frame));
     }
 
     std::vector< std::vector<cv::DMatch>> matches;
@@ -103,7 +103,7 @@ namespace ground_texture_odometry{
     }catch (cv::Exception& e)
     {
       ROS_ERROR("Matcher: ", e.what());
-      GroundTextureOdometry::matchFrame(secundum_frame, secundum_keypoints, secundum_descriptors);
+      VisualOdometry::matchFrame(secundum_frame, secundum_keypoints, secundum_descriptors);
       return;
     }
 
@@ -114,7 +114,7 @@ namespace ground_texture_odometry{
       {
         cv::Mat match_frame;
         cv::drawMatches(primum_frame, primum_keypoints, secundum_frame, secundum_keypoints, matches, match_frame, cv::Scalar( 255, 0, 0 ), cv::Scalar( 255, 0, 0 ));
-        matcher_publisher_.publish(GroundTextureOdometry::cvToRosImage(match_frame));
+        matcher_publisher_.publish(VisualOdometry::cvToRosImage(match_frame));
       } catch (std::exception& e)
       {
         ROS_ERROR("Debug II: ", e.what());
@@ -151,11 +151,11 @@ namespace ground_texture_odometry{
       //cv::drawKeypoints( primum_frame, primum_matched_keypoints, primum_keypoint_frame, cv::Scalar( 0, 0, 200 ));
       //cv::drawKeypoints( secundum_frame, secundum_matched_keypoints, secundum_keypoint_frame, cv::Scalar( 0, 0, 200 ));
       //cv::hconcat(primum_keypoint_frame, secundum_keypoint_frame, concat_frame);
-      //selected_keypoint_publisher_.publish(GroundTextureOdometry::cvToRosImage(concat_frame));
+      //selected_keypoint_publisher_.publish(VisualOdometry::cvToRosImage(concat_frame));
 
       cv::Mat concat_frame;
       cv::drawMatches(primum_frame, primum_matched_keypoints, secundum_frame, secundum_matched_keypoints, filtered_matches, concat_frame, cv::Scalar( 0, 0, 255 ), cv::Scalar( 0, 0, 255 ));
-      selected_keypoint_publisher_.publish(GroundTextureOdometry::cvToRosImage(concat_frame));
+      selected_keypoint_publisher_.publish(VisualOdometry::cvToRosImage(concat_frame));
     }
 
     cv::Mat homography, inlier_mask, test;
@@ -187,7 +187,7 @@ namespace ground_texture_odometry{
 
     if(primum_matched_keypoints.size() < 4 || homography.empty()) {
       ROS_ERROR("Homography Empty");
-      GroundTextureOdometry::matchFrame(secundum_frame, secundum_keypoints, secundum_descriptors);
+      VisualOdometry::matchFrame(secundum_frame, secundum_keypoints, secundum_descriptors);
       return;
     }
     
@@ -209,7 +209,7 @@ namespace ground_texture_odometry{
     {
       cv::Mat res;
       cv::drawMatches(primum_frame, primum_inliers, secundum_frame, secundum_inliers, inlier_matches, res, cv::Scalar(255, 0, 0), cv::Scalar(255, 0, 0));
-      selected_keypoint_matcher_publisher_.publish(GroundTextureOdometry::cvToRosImage(res));
+      selected_keypoint_matcher_publisher_.publish(VisualOdometry::cvToRosImage(res));
     }
 
     std::vector<double> x_diff, y_diff;
@@ -238,7 +238,7 @@ namespace ground_texture_odometry{
     }catch (cv::Exception& e)
     {
       ROS_ERROR("Decompose: ", e.what());
-      GroundTextureOdometry::matchFrame(secundum_frame, secundum_keypoints, secundum_descriptors);
+      VisualOdometry::matchFrame(secundum_frame, secundum_keypoints, secundum_descriptors);
       return;
     }
   
@@ -259,7 +259,7 @@ namespace ground_texture_odometry{
     {
       ROS_ERROR_STREAM("Normal NOT Correctly Found " << base );
       ROS_DEBUG_STREAM("Number of Solutions: " << solutions);
-      GroundTextureOdometry::matchFrame(secundum_frame, secundum_keypoints, secundum_descriptors);
+      VisualOdometry::matchFrame(secundum_frame, secundum_keypoints, secundum_descriptors);
       return;
     }
 
@@ -292,16 +292,16 @@ namespace ground_texture_odometry{
     if ((tvec_decomp.at<float>(0,0) < -1.0 * factor_d1|| tvec_decomp.at<float>(0,0) > 1.0*factor_d1) || (tvec_decomp.at<float>(1,0) < -1.0*factor_d1 || tvec_decomp.at<float>(1,0) > 1.0*factor_d1))
     {
       ROS_ERROR_STREAM("Out of Range " << tvec_decomp.at<float>(0,0) << " " << tvec_decomp.at<float>(1,0) << " " <<  tvec_decomp.at<float>(2,0));
-      GroundTextureOdometry::matchFrame(secundum_frame, secundum_keypoints, secundum_descriptors);
+      VisualOdometry::matchFrame(secundum_frame, secundum_keypoints, secundum_descriptors);
       return;
     } 
 
     ROS_DEBUG_STREAM("XYZ " << tvec_decomp.at<float>(0,0) << " " << tvec_decomp.at<float>(1,0) << " " <<  tvec_decomp.at<float>(2,0));
     ROS_DEBUG_STREAM("RPY " << rvec_decomp.at<float>(0,0) << " " << rvec_decomp.at<float>(1,0) << " " <<  rvec_decomp.at<float>(2,0));
 
-    y += tvec_decomp.at<float>(0,0);
+    z += tvec_decomp.at<float>(0,0);
     x += tvec_decomp.at<float>(1,0);
-    //z += tvec_decomp.at<float>(2,0);
+    y += tvec_decomp.at<float>(2,0);
 
     //msgs.twist.twist.linear.x = tvec_decomp.at<float>(0,0);
     //msgs.twist.twist.linear.y = tvec_decomp.at<float>(1,0);
@@ -315,7 +315,7 @@ namespace ground_texture_odometry{
 
     transform_msgs.header.stamp = ros::Time::now();
     transform_msgs.header.frame_id = "map";
-    transform_msgs.child_frame_id = "gto_odom";
+    transform_msgs.child_frame_id = "viso_odom";
 
     transform_msgs.transform.translation.x = x;
     transform_msgs.transform.translation.y = y;
@@ -347,23 +347,23 @@ namespace ground_texture_odometry{
 
     //output_odom_.publish(msgs);
     
-    GroundTextureOdometry::matchFrame(secundum_frame, secundum_keypoints, secundum_descriptors);
+    VisualOdometry::matchFrame(secundum_frame, secundum_keypoints, secundum_descriptors);
   }
 
-  void GroundTextureOdometry::publishOdom()
+  void VisualOdometry::publishOdom()
   {
     msgs.header.stamp = ros::Time::now();
     output_odom_.publish(msgs);
   }
 
-  void GroundTextureOdometry::matchFrame(cv::Mat& secundum_frame, std::vector<cv::KeyPoint>& secundum_keypoints, cv::Mat& secundum_descriptors)
+  void VisualOdometry::matchFrame(cv::Mat& secundum_frame, std::vector<cv::KeyPoint>& secundum_keypoints, cv::Mat& secundum_descriptors)
   {
     primum_frame = secundum_frame;
     primum_keypoints = secundum_keypoints;
     primum_descriptors = secundum_descriptors;
   }
 
-  void GroundTextureOdometry::paramCallback(gto::gtoConfig &config, uint32_t level)
+  void VisualOdometry::paramCallback(gto::gtoConfig &config, uint32_t level)
   {
   	std::lock_guard<std::mutex> lock(mutex);
     ROS_WARN("Param Update");
@@ -395,7 +395,7 @@ namespace ground_texture_odometry{
     normal_axis = config.normal_axis;
   }
 
-  void GroundTextureOdometry::initialFrame()
+  void VisualOdometry::initialFrame()
   {
     primum_frame = image_queue_.front();
     image_queue_.pop_front();
@@ -405,11 +405,11 @@ namespace ground_texture_odometry{
     // Show Keypoints of Initial Frame
     cv::Mat keypoint_frame;
     cv::drawKeypoints( primum_frame, primum_keypoints, keypoint_frame, cv::Scalar( 0, 200, 0 ));
-    sensor_msgs::Image ros_keypoint_image = GroundTextureOdometry::cvToRosImage(keypoint_frame);
+    sensor_msgs::Image ros_keypoint_image = VisualOdometry::cvToRosImage(keypoint_frame);
     keypoint_publisher_.publish(ros_keypoint_image);
   }
 
-  sensor_msgs::Image GroundTextureOdometry::cvToRosImage(const cv::Mat frame )
+  sensor_msgs::Image VisualOdometry::cvToRosImage(const cv::Mat frame )
   {
     // Image Converter
     std_msgs::Header header; 
@@ -420,7 +420,7 @@ namespace ground_texture_odometry{
     return ros_image;
   }
 
-  void GroundTextureOdometry::imageCallback(const sensor_msgs::CompressedImage::ConstPtr& compressed_image)
+  void VisualOdometry::imageCallback(const sensor_msgs::CompressedImage::ConstPtr& compressed_image)
   {
     // std::lock_guard<std::mutex> lock(mutex);
 
@@ -429,7 +429,7 @@ namespace ground_texture_odometry{
   }
 
 
-  void GroundTextureOdometry::infoCallback(const sensor_msgs::CameraInfo::ConstPtr& cam_info)
+  void VisualOdometry::infoCallback(const sensor_msgs::CameraInfo::ConstPtr& cam_info)
   {
     //std::lock_guard<std::mutex> lock(mutex);
 
@@ -437,4 +437,4 @@ namespace ground_texture_odometry{
     D = cam_info->D;
   }
 
-}; // namespace ground_texture_odometry
+}; // namespace visual_odometry
