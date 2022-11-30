@@ -148,7 +148,7 @@
 
   <node pkg="viso" type="visual_odometry_node" name="visual_odometry" output="screen">
   <remap from="/image_raw" to="/camera_viso/color/image_raw/compressed"/>
-  <remap from="/camera_info" to="/camera_viso/camera/color/camera_info"/>
+  <remap from="/camera_info" to="/camera_viso/color/camera_info"/>
   </node>
 
 
