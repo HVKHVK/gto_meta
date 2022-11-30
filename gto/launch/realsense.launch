@@ -1,5 +1,5 @@
 <launch>
-  <arg name="serial_no"           default=""/>
+  <arg name="serial_no"           default="022422073724"/>
   <arg name="usb_port_id"         default=""/>
   <arg name="device_type"         default=""/>
   <arg name="json_file_path"      default=""/>
