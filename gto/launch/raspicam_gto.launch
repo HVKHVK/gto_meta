@@ -23,4 +23,9 @@
     <param name="exposure_mode" value="antishake"/>
     <param name="shutter_speed" value="0"/>
   </node>
+
+  <node pkg="gto" type="ground_texture_odometry_node" name="ground_texture_odometry" output="screen">
+  <remap from="/image_raw" to="/raspicam_node/image/compressed"/>
+  <remap from="/camera_info" to="/raspicam_node/camera_info"/>
+  </node>
 </launch>
