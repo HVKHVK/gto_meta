@@ -22,7 +22,7 @@
     <param name="framerate" value="-1"/>
     <param name="zoom" value="2"/>
     <param name="sharpness" value="100"/>
-    <param name="ISO" value="100"/>
+    <param name="ISO" value="1000"/>
     <param name="exposure_mode" value="sports"/>
     <param name="shutter_speed" value="0"/>
   </node>
