@@ -19,8 +19,11 @@
     <param name="width" value="1280"/>
     <param name="height" value="960"/>
 
-    <param name="framerate" value="30"/>
-    <param name="exposure_mode" value="antishake"/>
+    <param name="framerate" value="-1"/>
+    <param name="zoom" value="2"/>
+    <param name="sharpness" value="100"/>
+    <param name="ISO" value="100"/>
+    <param name="exposure_mode" value="sports"/>
     <param name="shutter_speed" value="0"/>
   </node>
 </launch>
