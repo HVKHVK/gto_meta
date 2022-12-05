@@ -70,5 +70,5 @@ install(DIRECTORY launch/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
   PATTERN ".svn" EXCLUDE)
 
-install(DIRECTORY camera_info
+install(DIRECTORY camera_info/
 DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/camera_info)
