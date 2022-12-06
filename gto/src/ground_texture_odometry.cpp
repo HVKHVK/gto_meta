@@ -424,7 +424,7 @@ namespace ground_texture_odometry{
   {
     // std::lock_guard<std::mutex> lock(mutex);
 
-    cv_bridge::CvImagePtr cv_img_msg = cv_bridge::toCvCopy(compressed_image, "mono8");
+    cv_bridge::CvImagePtr cv_img_msg = cv_bridge::toCvCopy(compressed_image, "CV_8UC1");
     image_queue_.push_back(cv_img_msg->image);
   }
 

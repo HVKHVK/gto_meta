@@ -26,7 +26,7 @@
   <arg name="infra_width"         default="848"/>
   <arg name="infra_height"        default="100"/>
   <arg name="enable_infra"        default="false"/>
-  <arg name="enable_infra1"       default="false"/>
+  <arg name="enable_infra1"       default="true"/>
   <arg name="enable_infra2"       default="false"/>
   <arg name="infra_rgb"           default="false"/>
 
@@ -146,8 +146,8 @@
   </group>
 
   <node pkg="gto" type="ground_texture_odometry_node" name="ground_texture_odometry" output="screen">
-  <remap from="/image_raw" to="/camera_gto/color/image_raw/compressed"/>
-  <remap from="/camera_info" to="/camera_gto/color/camera_info"/>
+  <remap from="/image_raw" to="/camera_gto/infra1/image_rect_raw/compressed"/>
+  <remap from="/camera_info" to="/camera_gto/infra1/camera_info"/>
   </node>
 
 
