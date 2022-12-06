@@ -2,7 +2,7 @@
 
 namespace ground_texture_odometry{
 
-  GroundTextureOdometry::GroundTextureOdometry(): private_nh_("~"), rate(30)
+  GroundTextureOdometry::GroundTextureOdometry(): private_nh_("~"), rate(300)
   {
 
     image_subscriber_ = nh_.subscribe("image_raw", 100, &GroundTextureOdometry::imageCallback, this);
@@ -23,7 +23,7 @@ namespace ground_texture_odometry{
     
     odom_reset_ = private_nh_.advertiseService("odom_reset", &GroundTextureOdometry::odomResetCallback, this);
     //private_nh_.param("debug", debug_, true);
-    image_queue_ = boost::circular_buffer<cv::Mat>(10);
+    image_queue_ = boost::circular_buffer<cv::Mat>(100);
 
     msgs.header.frame_id = "map";
     msgs.child_frame_id = "odom";
