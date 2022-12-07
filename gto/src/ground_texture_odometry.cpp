@@ -2,7 +2,7 @@
 
 namespace ground_texture_odometry{
 
-  GroundTextureOdometry::GroundTextureOdometry(): private_nh_("~"), rate(300)
+  GroundTextureOdometry::GroundTextureOdometry(): private_nh_("~"), rate(100)
   {
 
     image_subscriber_ = nh_.subscribe("image_raw", 100, &GroundTextureOdometry::imageCallback, this);
@@ -309,7 +309,7 @@ namespace ground_texture_odometry{
 
     roll = 0; //+= rvec_decomp.at<float>(0,0);
     pitch = 0; //+= rvec_decomp.at<float>(1,0);
-    yaw = 0; //+= rvec_decomp.at<float>(2,0);
+    yaw += rvec_decomp.at<float>(2,0);
 
     geometry_msgs::TransformStamped transform_msgs;
 
